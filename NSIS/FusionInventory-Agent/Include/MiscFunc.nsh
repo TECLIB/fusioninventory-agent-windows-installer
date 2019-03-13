@@ -148,6 +148,7 @@
    CreateDirectory "$R0\perl\bin"
    CreateDirectory "$R0\share"
    CreateDirectory "$R0\var"
+   CreateDirectory "$R0\logs"
 
    ; Create $R0\fusioninventory-agent.bat
    FileOpen $R1 "$R0\fusioninventory-agent.bat" w

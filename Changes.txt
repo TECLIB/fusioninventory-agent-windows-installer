@@ -1,5 +1,10 @@
 FusionInventory Agent Windows Installer - History of Revisions and Changes
 
+2.5 not release yet
+core:
+* Changed default log file location to:
+  C:\Program Files\FusionInventory-Agent\logs\fusioninventory-agent.log
+
 2.4.3 Fri, 22 Feb 2019
 agent:
 * FusionInventory Agent 2.4.3 (commit: e2b207694a | date: oct 03 2018)
