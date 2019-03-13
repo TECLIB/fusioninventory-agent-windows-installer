@@ -71,8 +71,8 @@ if [ -n "${APPVEYOR_REPO_TAG_NAME}" ]; then
    declare -r fusinv_agent_commit="${APPVEYOR_REPO_TAG_NAME}"
    declare -r fusinv_agent_release="${APPVEYOR_REPO_TAG_NAME}"
 elif [ -n "${APPVEYOR_REPO_BRANCH}" ]; then
-   declare -r fusinv_agent_commit="${APPVEYOR_REPO_BRANCH}"
-   declare -r fusinv_agent_release="${APPVEYOR_REPO_BRANCH}"
+   declare -r fusinv_agent_commit="develop"
+   declare -r fusinv_agent_release="2.4.x"
    declare -r TYPE="development"
 elif [ -n "${FIA_RELEASE}" ]; then
    declare -r fusinv_agent_release="${FIA_RELEASE}"
@@ -91,7 +91,7 @@ else
 fi
 
 declare -r fusinv_agent_mod_name='fusioninventory-agent'
-declare -r fusinv_agent_repository='https://github.com/TECLIB/fusioninventory-agent.git'
+declare -r fusinv_agent_repository='https://github.com/fusioninventory/fusioninventory-agent.git'
 
 declare -r fusinv_agent_mod_specific_dependences=''
 declare -r fusinv_agent_mod_dependences='Archive::Extract Compress::Zlib DateTime Digest::SHA File::Copy::Recursive File::Which HTTP::Daemon inc::Module::Install IO::Socket::SSL JSON::PP LWP::Protocol::https LWP::UserAgent Net::IP Net::NBName Net::Ping Net::SNMP Net::Write::Layer2 Parallel::ForkManager Parse::EDID Text::Template Thread::Queue UNIVERSAL::require URI::Escape Win32::Daemon Win32::Job Win32::OLE Win32::TieRegistry Win32::Unicode::File XML::TreePP'

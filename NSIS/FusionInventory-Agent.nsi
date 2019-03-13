@@ -116,15 +116,16 @@ SetCompressor /FINAL /SOLID lzma
 
 ; Releases of FusionInventory Agent Tasks
 ; TODO: We need to better read tasks release version while preparing sources
-!define FIA_TASK_COLLECT_RELEASE "2.4.0"
-!define FIA_TASK_DEPLOY_RELEASE "2.6"
-!define FIA_TASK_ESX_RELEASE "2.3"
-!define FIA_TASK_INVENTORY_RELEASE "1.4"
-!define FIA_TASK_NETDISCOVERY_RELEASE "2.6"
-!define FIA_TASK_NETINVENTORY_RELEASE "3.0"
+
+!define FIA_TASK_COLLECT_RELEASE "2.5"
+!define FIA_TASK_DEPLOY_RELEASE "2.7"
+!define FIA_TASK_ESX_RELEASE "2.4"
+!define FIA_TASK_INVENTORY_RELEASE "1.5"
+!define FIA_TASK_NETDISCOVERY_RELEASE "2.7"
+!define FIA_TASK_NETINVENTORY_RELEASE "3.1"
 !define FIA_TASK_WAKEONLAN_RELEASE "2.2"
 !define FIA_TASK_WMI_RELEASE "0.3"
-!define FIA_TASK_MAINTENANCE_RELEASE "1.0"
+!define FIA_TASK_MAINTENANCE_RELEASE "1.1"
 
 ; Release of the product
 ;    Note: The 'product' is the installer generated
@@ -216,7 +217,7 @@ SetCompressor /FINAL /SOLID lzma
    !else
       !ifdef FIAI_BUILD
          ; Product version for development releases with build number
-         !define PRODUCT_VERSION "${FIA_RELEASE}-build-${FIAI_BUILD}"
+         !define PRODUCT_VERSION "${FIA_RELEASE}-develop-${FIAI_BUILD}"
          !define PRODUCT_VERSION_BUILD "${FIAI_BUILD}"
 
          ; File version
@@ -327,6 +328,7 @@ Var FusionInventoryAgentTaskNetCoreInstalled
 !include "${FIAI_DIR}\Include\SectionFunc.nsh"
 !include "${FIAI_DIR}\Include\WinServicesFunc.nsh"
 !include "${FIAI_DIR}\Include\WinTasksFunc.nsh"
+!include "${FIAI_DIR}\Include\WinFirewallFunc.nsh"
 !include "${FIAI_DIR}\Include\CurrentConfig.nsh"
 
 
@@ -583,6 +585,9 @@ Section "-Init" SecInit
    ${UninstallCurrentAgent} $R0
    DetailPrint "Agent Uninstalled with Code: '$R0'"
 
+   ; Remove firewall exceptions (be sure)
+   ${RemoveFusionInventoryFirewallExceptions}
+
    ; Remove Windows service (be sure)
    ${RemoveFusionInventoryWindowsService}
 
@@ -719,6 +724,12 @@ Section "-End" SecEnd
    ${If} $R0 = 0
       ${InstallStartMenuFolder}
    ${EndIf}
+
+   ; Add Firewall exceptions
+   ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_ADD-FIREWALL-EXCEPTION}"
+   ${If} $R0 = 1
+      ${AddFusionInventoryFirewallException}
+   ${EndIf}
 SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -748,6 +759,9 @@ Section "-un.Init"
    ; Delete Start Menu folder
    SetShellVarContext all
    RMDir /r "$SMPROGRAMS\${PRODUCT_NAME}"
+
+   ; Remove firewall exceptions
+   ${RemoveFusionInventoryFirewallExceptions}
 
    ; Remove Windows service
    ${RemoveFusionInventoryWindowsService}
@@ -874,6 +888,7 @@ Function .onInit
             Call .onInitSilentMode
          ${EndIf}
       ${Else}
+         MessageBox MB_OK|MB_ICONSTOP "Command line error: $LastCommandLineError"
          Abort
       ${EndIf}
    ${Else}
@@ -883,7 +898,7 @@ Function .onInit
       ${IfNot} ${CommandLineSyntaxError}
          Call .onInitVisualMode
       ${Else}
-         Nop
+         MessageBox MB_OK|MB_ICONSTOP "Command line error: $LastCommandLineError"
       ${EndIf}
    ${EndIf}
 
@@ -903,7 +918,8 @@ Function .onInstSuccess
    ; Check runnow option
    ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_RUNNOW}"
    ${If} $R0 = 1
-      ${RunAgentNow}
+      ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_INSTALLDIR}"
+      ExecShell "" '"$R0\fusioninventory-agent.bat"' '--wait=5 --delaytime=10' SW_HIDE
    ${EndIf}
 
    ; Prepare to exit

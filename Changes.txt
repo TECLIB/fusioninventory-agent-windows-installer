@@ -1,5 +1,103 @@
 FusionInventory Agent Windows Installer - History of Revisions and Changes
 
+2.4.3 Fri, 22 Feb 2019
+agent:
+* FusionInventory Agent 2.4.3 (commit: e2b207694a | date: oct 03 2018)
+* fix some cases where a file handle was not closed
+* win32: fix a handle leak case when agent was running as service
+* daemon/service: reload target when the stat file has been updated by
+  another script to use the updated next run timeout
+* For server target, server connection attempts are delayed from 60 seconds,
+  doubled at each new failed attempt, now until reaching max defined by delaytime
+  configuration parameter.
+* Bump Inventory task version to 1.6
+* win32 antivirus support update:
+ - nicer product name report for ESET
+ - report expiration date for ESET
+* Fix #582: Add other Acer monitors support
+* Fix #625: Container UUID is the same than host UUID
+* Fix #604: Only inventory Windows Store on recent win32 platforms
+* Fix #596: Openstack container seen as Physical on win32
+* Fix #583: Add BitDefender antivirus support
+* Bump NetDiscovery task version to 2.8
+* Bump NetInventory task version to 3.2
+* Add BlueCoat proxy appliance serialnumber support
+* win32: Support arp table check for NetDiscovery task
+* Fix #634: Net::Ping version may not numeric with win32 installer
+* Add Panasas PanFS support
+* Add few HP/Compaq serialnumber cases support
+* Fix #605: try 'ip neighbor show' if 'arp' is not available for netdiscovery
+* Add UPS-MIB support for Riello, S2S & APC
+* Updated sysobject.ids (tagged fia-2.4.3 tag on github repository)
+
+core:
+* Update PCI IDs database (pci.ids file) to 2019.02.20
+* Update USB IDs database (usb.ids file) to 2019.01.17
+
+tools:
+* Updated dmidecode to v3.2 (update 1)
+
+2.4.2 Tue, 03 Oct 2018
+agent:
+* FusionInventory Agent 2.4.2 (commit: f7767abfdb | date: oct 03 2018)
+* Fix physical memory error correction detection via WMI under win32
+* Fix #299: Added UWP/APPX/Windows Store software inventory
+* win32 antivirus detection enhanced support:
+  - add support for few antivirus base versions (defender, kaspersky,
+    EST, avira, MSE, McAfee, F-Secure)
+  - try to set license expiration date for F-Secure, kaspersky & avira
+* Fix #442: kaspersky not fully recognized in russia
+* Fix #501: wrong status was reported when windows defender was disabled
+* Bump Deploy task version to 2.7
+* Fix deployment of private packages: their downloaded parts were not
+  fully found when download were too long (closes: #542)
+* Handle retention duration differently for p2p and not p2p files
+* P2p files have a default retention of 3 days by default
+* P2p files have a default retention of 3 times the target prolog delay
+  after download, parts retention is reset to the same delay for all file parts,
+  so the retention duration applies at the time parts has been downloaded
+* P2p file parts are now cleaned up after job success if retention duration
+  is null
+* Fix WinKeyNotEquals audit check to also be true when the registry key is
+  simply missing
+* Add support to "startjob" key for failing deploy audit check to permit
+  to skip remaining checks when a failing condition makes them obsolete.
+* Bump ESX task version to 2.4
+* Support 2 ServiceTags case to cover chassis & lame board S/N inventory
+* Updated AssetTag support
+* fix wrong cpu core computation when only one package is available
+* Bump NetDiscovery task version to 2.7
+* Bump NetInventory task version to 3.1
+* Thanks to @QuickNerd357, Brocade devices will now show serial number and
+  firmware informations.
+* Sanitize VLAN names. This fixes an issue with Cisco Small Business Switches.
+* Get rid of unofficial Net::Ping::TimeStamp support to only use official
+  support if available. Net::Ping v2.67 is now mandatory to discover
+  devices thanks to timestamp ping.
+* Fix #481: Add Synology NAS support
+* Fix #480: Add CheckPoint support
+* Fix #488: Update HP Printers support
+* Updated LLDP/CDP connection match checks
+* Updated sysobject.ids (tagged fia-2.4.2 tag on github repository)
+* Bump Collect task version to 2.5
+* Thanks to David Durieux, add support for dynamic pattern in registry key
+  collect under win32. The dynamic pattern is '**' to glob subkeys like in:
+  HKEY_USERS/**/Software/**/**/CurrentVersion
+* Bump Maintenance task version to 1.1
+* Disable Maintenance task if no maintenance module could be used
+
+core:
+* Register service with folders to include to avoid conflicts from any other
+  local perl install
+* /add-firewall-exception option is now fully implemented
+* Fix /runnow option
+* Show an error combo on command line parsing error
+* Update PCI IDs database (pci.ids file) to 2018.10.02
+* Update USB IDs database (usb.ids file) to 2018.08.15
+
+tools:
+* Updated dmidecode to v3.2
+
 2.4.1 Tue, 03 Jul 2018
 agent:
 * FusionInventory Agent 2.4.1 (commit: 7c7db6661f | date: jun 29 2018)
