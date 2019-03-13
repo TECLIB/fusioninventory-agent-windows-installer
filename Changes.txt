@@ -4,6 +4,9 @@ FusionInventory Agent Windows Installer - History of Revisions and Changes
 core:
 * Changed default log file location to:
   C:\Program Files\FusionInventory-Agent\logs\fusioninventory-agent.log
+* Added perl/bin/fusioninventory-win32-service.rc.sample installation:
+  Rename it to fusioninventory-win32-service.rc to enable early stderr logging
+  during service start
 
 2.4.3 Fri, 22 Feb 2019
 agent:

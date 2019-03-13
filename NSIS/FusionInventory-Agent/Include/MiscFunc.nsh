@@ -254,6 +254,7 @@
    File "${HDPARM_DIR}\hdparm.exe"
    File "${FIA_DIR}\bin\fusioninventory-agent"
    File "${FIA_DIR}\bin\fusioninventory-win32-service"
+   File "${FIA_DIR}\bin\fusioninventory-win32-service.rc.sample"
 
    ; Install $R0\share
    SetOutPath "$R0\share\"
