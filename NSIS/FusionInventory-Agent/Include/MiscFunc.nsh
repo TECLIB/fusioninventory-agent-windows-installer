@@ -186,6 +186,9 @@
    ; Install $R0\etc
    SetOutPath "$R0\etc\"
    File /oname=agent.cfg.sample "${FIA_DIR}\etc\agent.cfg"
+   File /oname=inventory-server-plugin.cfg "${FIA_DIR}\etc\inventory-server-plugin.cfg"
+   File /oname=server-test-plugin.cfg.sample "${FIA_DIR}\etc\server-test-plugin.cfg"
+   File /oname=ssl-server-plugin.cfg "${FIA_DIR}\etc\ssl-server-plugin.cfg"
 
    ; Install $R0\perl\agent\FusionInventory\Agent.pm
    SetOutPath "$R0\perl\agent\FusionInventory"
