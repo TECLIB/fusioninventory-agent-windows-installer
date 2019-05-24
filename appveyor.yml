@@ -12,15 +12,14 @@ notifications:
 install:
   - cd Perl\Scripts
   - .\install-gnu-utilities-collection.bat
-  - .\install-strawberry-perl.bat
-  - .\install-perl-modules-and-dependencies.bat
-  - .\delete-perl-modules-and-dependencies-temporary-files.bat
-  - cd ..\..
+  - .\update-gnu-utilities-collection.bat
 
 test: off
 
 build_script:
-  - cd Perl\Scripts
+  - .\install-strawberry-perl.bat
+  - .\install-perl-modules-and-dependencies.bat
+  - .\delete-perl-modules-and-dependencies-temporary-files.bat
   - .\build-strawberry-perl-package-for-fusioninventory-agent.bat
   - cd ..\..
   - dir Perl\Strawberry
