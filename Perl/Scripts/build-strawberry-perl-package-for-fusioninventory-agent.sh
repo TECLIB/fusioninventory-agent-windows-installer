@@ -225,8 +225,8 @@ while (( ${iter} < ${#archs[@]} )); do
    echo "Building the Perl ARchive (PAR) package for Strawberry Perl ${strawberry_release} (${strawberry_version}-${arch_label}s)..."
 
    (eval cd "${strawberry_arch_path}"
-    eval ${perl} ${pp} -p -B -c -u -M threads -o ${tmpdir}/${strawberry_pepfia_par_file} \
-       "${tmpdir}/${strawberry_pepfia_par_template_file}" > /dev/null 2>&1
+    eval ${perl} ${pp} -v -p -B -c -u -M threads -o ${tmpdir}/${strawberry_pepfia_par_file} \
+       "${tmpdir}/${strawberry_pepfia_par_template_file}" > ../../pp.log 2>&1
    )
 
    # Partial clean
@@ -265,9 +265,9 @@ while (( ${iter} < ${#archs[@]} )); do
    eval ${install} "${strawberry_arch_path}/portableshell.bat" "${tmpdir}/Strawberry/${strawberry_version}/${arch}"
    eval ${install} "${strawberry_arch_path}/c/bin/dmake.exe" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/libbz2-1*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
-   eval ${install} "${strawberry_arch_path}/c/bin/libeay32*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/liblzma-5*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
-   eval ${install} "${strawberry_arch_path}/c/bin/ssleay32*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
+   eval ${install} "${strawberry_arch_path}/c/bin/libssl*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
+   eval ${install} "${strawberry_arch_path}/c/bin/libcrypto*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/zlib1*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/startup/*.mk" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin/startup"
    eval ${install} "${strawberry_arch_path}/c/bin/startup/winnt/*.mk" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin/startup/winnt"
@@ -275,7 +275,7 @@ while (( ${iter} < ${#archs[@]} )); do
    eval ${install} "${strawberry_arch_path}/perl/bin/perl{.exe,*.*.*.exe,*.dll}" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
    eval ${install} "${strawberry_arch_path}/perl/bin/pl2bat.bat" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
    eval ${install} "${strawberry_arch_path}/perl/bin/libstdc++-6.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
-   eval ${install} "${strawberry_arch_path}/perl/bin/libgcc_s_sjlj-1.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
+   eval ${install} "${strawberry_arch_path}/perl/bin/libgcc_s_*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
    eval ${install} "${strawberry_arch_path}/perl/bin/libwinpthread-1.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
 
    # Select files
@@ -296,6 +296,7 @@ while (( ${iter} < ${#archs[@]} )); do
             echo -n '.'
          fi
       done
+      echo
       phase=$(( ${phase} + 1 ))
    done
    echo "Done!"

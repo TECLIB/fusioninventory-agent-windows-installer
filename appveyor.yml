@@ -10,32 +10,31 @@ notifications:
     on_build_status_changed: true
 
 install:
-  - cinst pandoc --version 1.17.0.2
   - cd Perl\Scripts
   - .\install-gnu-utilities-collection.bat
-  - .\install-strawberry-perl-package-for-fusioninventory-agent.bat
-  - .\install-fusioninventory-agent.bat
-  - .\patch-fusioninventory-agent.bat
-  - .\update-ids-repositories.bat
+  - .\install-strawberry-perl.bat
+  - .\install-perl-modules-and-dependencies.bat
+  - .\delete-perl-modules-and-dependencies-temporary-files.bat
   - cd ..\..
 
 test: off
 
 build_script:
-  - cd NSIS
-  - .\FusionInventory-Agent.bat
-  - dir
+  - cd Perl\Scripts
+  - .\build-strawberry-perl-package-for-fusioninventory-agent.bat
+  - cd ..\..
+  - dir Perl\Strawberry
 
 artifacts:
   - path: NSIS/*.txt,Perl/Scripts/*build.log*
     name: logs
-  - path: NSIS/*.exe
-    name: exes
-  - path: NSIS/*.md5,NSIS/*.sha1,NSIS/*.sha256
-    name: chks
+  - path: Perl/Strawberry/*.xz
+    name: archives
+  - path: Perl/Strawberry/*.xz.md5,Perl/Strawberry/*.xz.sha1,Perl/Strawberry/*.xz.sha256
+    name: digests
 
 deploy:
-  description: 'Release candidate by Teclib'
+  description: 'Perl for FusionInventory Agent release candidate by Teclib'
   provider: GitHub
   auth_token:
     secure: YBbTdTUzqgeUZl4OJKHvP0TFOtBR+omjfsUcxgf92+ht/4jCqCDbd/rbaswueKTe
