@@ -38,7 +38,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: YBbTdTUzqgeUZl4OJKHvP0TFOtBR+omjfsUcxgf92+ht/4jCqCDbd/rbaswueKTe
-  artifact: exes,chks
+  artifact: archives,digests
   draft: false
   prerelease: true
   on:
