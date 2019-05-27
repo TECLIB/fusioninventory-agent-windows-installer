@@ -241,7 +241,7 @@ while (( ${iter} < ${#archs[@]} )); do
    echo "Selecting files from Strawberry Perl ${strawberry_release} (${strawberry_version}-${arch_label}s)..."
 
    # Build structure
-   ${install} --mode 0775 --directory "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin/startup/winnt/mingw"
+   ${install} --mode 0775 --directory "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    ${install} --mode 0775 --directory "${tmpdir}/Strawberry/${strawberry_version}/${arch}/cpan/sources"
    ${install} --mode 0775 --directory "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/bin"
    ${install} --mode 0775 --directory "${tmpdir}/Strawberry/${strawberry_version}/${arch}/perl/lib"
