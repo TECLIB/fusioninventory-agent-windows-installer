@@ -10,6 +10,7 @@ notifications:
     on_build_status_changed: true
 
 install:
+  - choco install winpcap
   - cd Perl\Scripts
   - .\install-gnu-utilities-collection.bat
   - .\update-gnu-utilities-collection.bat
@@ -25,7 +26,7 @@ build_script:
   - dir Perl\Strawberry
 
 artifacts:
-  - path: NSIS/*.txt,Perl/Scripts/*.log
+  - path: Perl/Strawberry/*.log
     name: logs
   - path: Perl/Strawberry/*.xz
     name: archives

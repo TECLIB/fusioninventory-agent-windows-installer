@@ -59,6 +59,8 @@ declare -r tr=$(type -P tr)
 declare -r uniq=$(type -P uniq)
 declare -r find=$(type -P find)
 declare -r cp=$(type -P cp)
+declare -r curl=$(type -P curl)
+declare -r p7z=$(type -P 7z)
 
 # Check the OS
 if [ "${MSYSTEM}" = "MSYS" ]; then
@@ -134,6 +136,43 @@ fusinv_mod_specific_dependences="$(echo ${fusinv_agent_mod_specific_dependences}
                                  ${tr} '\n' ' ')"
 fusinv_mod_specific_dependences="${fusinv_mod_specific_dependences% *}"
 
+# Download winpcap as need to install Net::Pcap perl module
+echo "Downloading WinPcap SDK..."
+eval ${curl} --silent --location --max-redirs 6 --output "/tmp/${winpcap_sdk}" \
+   "${winpcap_url}"
+if [ ! -e "/tmp/${winpcap_sdk}" ]; then
+   echo "Failed to download winpcap SDK"
+   exit 4
+fi
+# WinPcap installation for x86
+for arch in ${archs[@]}; do
+   # Extract archive
+   eval ${p7z} x -bd -y -o"${strawberry_arch_path}" "/tmp/${winpcap_sdk}"
+   if (( $? == 0 )); then
+      echo "Done and extracted!"
+   else
+      echo "Failure!"
+      echo
+      eval echo "There has been an error decompressing \'${winpcap_sdk}\'."
+      echo
+      eval echo -n "Perhaps the URL \'${winpcap_url}\' is incorrect.\ "
+      echo -n "Please, check the variable '${winpcap_url}' in the 'load-perl-environment' "
+      echo "file, and try again."
+      exit 5
+   fi
+   # Prepare Netpcap libs
+   if [ "${arch}" == "x64" ]; then
+      eval "${strawberry_arch_path}/c/bin/gendef.exe" - C:/Windows/system32/wpcap.dll > wpcap.def
+      eval "${strawberry_arch_path}/c/bin/dlltool.exe" --as-flags=--64 -m i386:x86-64 -k --output-lib libwpcap.a --input-def wpcap.def
+      eval ${cp} -avf "libwpcap.a"  "${strawberry_arch_path}/c/Lib/libwpcap.a"
+   else
+      eval ${cp} -avf "${strawberry_arch_path}/WpdPack/Lib/libwpcap.a"  "${strawberry_arch_path}/c/Lib/libwpcap.a"
+   fi
+   eval ${cp} -avf "${strawberry_arch_path}/WpdPack/Include/*"  "${strawberry_arch_path}/c/include"
+done
+eval ${rm} -f "/tmp/${winpcap_sdk}" > /dev/null 2>&1
+echo
+
 # Installation loop
 while (( ${iter} < ${#archs[@]} )); do
    # Set arch and arch_label
@@ -163,7 +202,9 @@ while (( ${iter} < ${#archs[@]} )); do
    # Install specific modules
    if [ -n "${fusinv_mod_specific_dependences}" ]; then
       echo "Installing specific modules..."
-      ${perl} ${cpanm} --install --auto-cleanup 0 --no-man-pages --skip-installed --notest --quiet ${fusinv_mod_specific_dependences}
+      ${perl} ${cpanm} --install --auto-cleanup 0 --no-man-pages --skip-installed --notest ${fusinv_mod_specific_dependences}
+      echo "Keeping perl ${strawberry_version}-${arch_label}s modules build log..."
+      eval ${cp} -av "$(pwd)/${strawberry_arch_path}/data/.cpanm/build.log" "$(pwd)/${strawberry_path}/../build-specific-${arch_label}s.log"
    fi
 
    # Install modules
