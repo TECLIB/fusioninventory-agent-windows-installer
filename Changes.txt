@@ -12,6 +12,9 @@ core:
 * add "/no-firewall-exception" option to permit to change the new default
 * doc: always show english help as only this one is available
 
+build process:
+* Also build portable versions from Appveyor
+
 2.5.1-rc2 Wed, 29 May 2019
 agent:
 * FusionInventory Agent 2.5.1-dev (commit: e9fbfed880 | date: may 13 2019)

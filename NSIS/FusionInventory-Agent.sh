@@ -177,6 +177,7 @@ fi
 # Delete current installers
 for arch in ${archs[@]}; do
    eval ${rm} -f "${nsis_log_file}" "${installer_file}" "${installer_file}.*" > /dev/null 2>&1
+   ${rm} -f "*-portable.exe" > /dev/null 2>&1
 done
 
 # Delete current help files
