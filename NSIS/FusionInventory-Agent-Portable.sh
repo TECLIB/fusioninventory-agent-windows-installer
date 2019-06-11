@@ -138,8 +138,13 @@ mv -f "Portable/FusionInventory-Agent/etc/agent.cfg.sample" "Portable/FusionInve
 echo 'include "conf.d/"' >>"Portable/FusionInventory-Agent/etc/agent.cfg"
 
 # Fix agent launcher to use config file
-sed -i -e "s/perl\.exe fusioninventory-agent/perl.exe fusioninventory-agent --conf-file ..\\\\..\\\\etc\\\\agent.cfg/" \
-   "Portable/FusionInventory-Agent/fusioninventory-agent.bat"
+cat >"Portable/FusionInventory-Agent/fusioninventory-agent.bat" <<BATCH
+@echo off
+for %%p in (".") do pushd "%%~fsp"
+cd /d "%~dp0\perl\bin"
+perl.exe fusioninventory-agent --conf-file="..\..\etc\agent.cfg" %*
+popd
+BATCH
 
 # Reset _confdir in Config.pm
 sed -i -e "s|'_confdir' => .*$|'_confdir' => '../../etc',|" \
