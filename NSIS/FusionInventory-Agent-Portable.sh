@@ -52,7 +52,6 @@ declare basename=''
 declare -a -r digests=(md5 sha1 sha256)
 
 declare -r openssl=$(type -P openssl)
-declare -r rm=$(type -P rm)
 
 # Check the OS
 if [ "${MSYSTEM}" = "MSYS" ]; then
@@ -126,8 +125,10 @@ done
 # Wait a little more by security
 sleep 5
 
+ls Portable/FusionInventory-Agent
+
 # Cleanup
-${rm} -vf "Portable/FusionInventory-Agent/Uninstall.exe"
+rm -vf "Portable/FusionInventory-Agent/Uninstall.exe"
 
 # Add data dir
 install --directory "Portable/FusionInventory-Agent/data"
@@ -171,6 +172,6 @@ else
    echo " Failed to build ${arch} portable agent archive."
 fi
 
-${rm} -rf "Portable" > /dev/null 2>&1
+rm -rf "Portable" > /dev/null 2>&1
 
 echo
