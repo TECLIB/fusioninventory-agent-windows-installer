@@ -112,7 +112,7 @@ echo -n "Building ${arch} portable archive..."
 
 # Wait until agent is fully installed
 let timeout=5*60
-while [ ! -e "Portable/FusionInventory-Agent/share/usb.ids" ]; do
+while [ ! -e "Portable/FusionInventory-Agent/share/usb.ids" -o ! -e "Portable/FusionInventory-Agent/Uninstall.exe" ]; do
    sleep 1
    let --timeout
    (( timeout % 10 )) || echo -n
