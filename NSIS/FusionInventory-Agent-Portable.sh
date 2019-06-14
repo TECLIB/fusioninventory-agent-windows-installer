@@ -125,10 +125,8 @@ done
 # Wait a little more by security
 sleep 5
 
-ls Portable/FusionInventory-Agent
-
 # Cleanup
-rm -vf "Portable/FusionInventory-Agent/Uninstall.exe"
+rm -f "Portable/FusionInventory-Agent/Uninstall.exe"
 
 # Add data dir
 install --directory "Portable/FusionInventory-Agent/data"
