@@ -582,7 +582,7 @@
    SetOutPath "$R0\perl\agent\FusionInventory\Agent\Task"
    File "${FIA_DIR}\lib\FusionInventory\Agent\Task\NetDiscovery.pm"
    SetOutPath "$R0\perl\agent\FusionInventory\Agent\Task\NetDiscovery"
-   File "${FIA_DIR}\lib\FusionInventory\Agent\Task\NetDiscovery\Version.pm"
+   File "${FIA_DIR}\lib\FusionInventory\Agent\Task\NetDiscovery\*.*"
 
    ; Install $R0\perl\bin\fusioninventory-netdiscovery
    SetOutPath "$R0\perl\bin\"
@@ -635,7 +635,7 @@
    SetOutPath "$R0\perl\agent\FusionInventory\Agent\Task"
    File "${FIA_DIR}\lib\FusionInventory\Agent\Task\NetInventory.pm"
    SetOutPath "$R0\perl\agent\FusionInventory\Agent\Task\NetInventory"
-   File "${FIA_DIR}\lib\FusionInventory\Agent\Task\NetInventory\Version.pm"
+   File "${FIA_DIR}\lib\FusionInventory\Agent\Task\NetInventory\*.*"
 
    ; Install $R0\perl\bin\fusioninventory-netinventory
    SetOutPath "$R0\perl\bin\"
