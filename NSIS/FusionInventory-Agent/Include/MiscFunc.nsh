@@ -183,12 +183,10 @@
    nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-readme.txt"'
    Delete "$R0\docs\releases\sed*"
 
-   ; Install $R0\etc
+   ; Install $R0\etc with all default HTTP server plugin configurations
    SetOutPath "$R0\etc\"
    File /oname=agent.cfg.sample "${FIA_DIR}\etc\agent.cfg"
-   File /oname=inventory-server-plugin.cfg "${FIA_DIR}\etc\inventory-server-plugin.cfg"
-   File /oname=server-test-plugin.cfg.sample "${FIA_DIR}\etc\server-test-plugin.cfg"
-   File /oname=ssl-server-plugin.cfg "${FIA_DIR}\etc\ssl-server-plugin.cfg"
+   File "${FIA_DIR}\etc\*-plugin.cfg"
 
    ; Install $R0\perl\agent\FusionInventory\Agent.pm
    SetOutPath "$R0\perl\agent\FusionInventory"
