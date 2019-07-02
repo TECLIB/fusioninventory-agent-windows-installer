@@ -1,48 +1,65 @@
 FusionInventory Agent Windows Installer - History of Revisions and Changes
 
+2.5.1 Tue, 02 Jul 2019
+agent:
+* FusionInventory Agent 2.5.1 (commit: 48a1ef9734 | date: jul 02 2019)
+* fix HTTP server plugins base configuration folder
+* fix HTTP server plugins installation from Makefile
+* fix HTTP server SSL plugin so SSL sessions are not closed after one second
+* win32: fix service not answering to HTTP request while running a task
+* feature: Added Proxy and SecondaryProxy HTTP server plugins
+* Bump Inventory task version to 1.8
+* fix error message while starting fusioninventory-inventory script
+* fix #667: LG tv monitor inventory failure
+* win32: VirtualBox or VPN network adapters are now set as virtual
+* added Samsung S24E450 monitor serial support
+* fix #688: inventory on "windows x64 1903" takes too much time. That was only
+  happen when an antivirus other than Windows Defender was enabled and it blocks
+  WMI call toward MSFT_MpComputerStatus class.
+* win32: Add Symantec/Norton antivirus support
+* fix #399: Deduplicate logged users without being case sensitive on win32
+* Bump NetDiscovery task version to 4.0
+* Bump NetInventory task version to 4.0
+* add Hygon Dhyana Support
+* refactor: the multi-threading scheme has been re-worked so it is now working for
+  netinventory task and more efficient for netdiscovery while scanning many range
+  by job
+* refactor: Collected datas are also sent to server from threads
+* Added 2 options to fusioninventory-netdiscovery to save XMLs as file and
+  automatically start netinventory when convenient:
+  * add --inventory option to netdiscovery to automatically start netinventory
+  * add --save option to define a folder where to save related XML
+* Updated sysobject.ids (tagged fia-2.5.1 tag on github repository)
+* Bump ESX task version to 2.5
+* Support EnclosureSerialNumberTag and SerialNumberTag values as availables since
+  VMware ESXi 6.5, Patch Release ESXi650-201811002 (build-10884925) and in latest
+  VMware ESXi 6.7.
+* add esx script new options:
+  Add --dump and --dumpfile option to help ESX support debugging
+
 core:
+* Don't forget to remove logs folder on uninstall
+* WakeOnlan task supported again
+* fix: update logfile option when installdir is not the default
+* set "add-firewall-exception" by default now
+* add "/no-firewall-exception" option to permit to change the new default
+* doc: always show english help as only this one is available
 * fix: rc & development releases installers are now running with installer debug
   option enabled. This creates the debug subfolder to put in command parser log
   and computed Options.ini file.
 * little enhancements:
  - pre-check the "Accept the license" checkbox on the license page
  - Uncheck by default the "show readme" at the finish page
-* fix: update logfile option when installdir is not the default
-* set "add-firewall-exception" by default now
-* add "/no-firewall-exception" option to permit to change the new default
-* doc: always show english help as only this one is available
-
-build process:
-* Also build portable versions from Appveyor
-
-2.5.1-rc2 Wed, 29 May 2019
-agent:
-* FusionInventory Agent 2.5.1-dev (commit: e9fbfed880 | date: may 13 2019)
-* win32: fix service not answering to HTTP request while running a task
-
-core:
 * Don't forget to remove logs folder on uninstall
-* WakeOnlan task supported again
-
-strawberry perl package:
-* Based on Strawberry Perl 5.28.2.1 (May 2019) revision 2
-* Includes Net::Pcap support
-
-2.5.1-rc1 Fri, 24 May 2019
-agent:
-* FusionInventory Agent 2.5.1-dev (commit: e9fbfed880 | date: may 13 2019)
-* win32: fix service not answering to HTTP request while running a task
-
-core:
-* Don't forget to remove logs folder on uninstall
-* WakeOnLan task not supported with Net::Pcap support missing from used perl
-  package
-* Update PCI IDs database (pci.ids file) to 2019.05.16
+* Update PCI IDs database (pci.ids file) to 2019.06.30
 * Update USB IDs database (usb.ids file) to 2019.05.08
 
 strawberry perl package:
-* Based on Strawberry Perl 5.28.2.1 (May 2019) revision 1
-* No Net::Pcap support
+* Based on Strawberry Perl 5.28.2.1 (May 2019) revision 2
+* Includes Net::Pcap support for WakeOnlan task support
+
+build process:
+* Also build portable versions from Appveyor
 
 2.5 Sat, 13 Apr 2019
 agent:
