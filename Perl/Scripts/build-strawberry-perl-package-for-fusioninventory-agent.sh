@@ -265,6 +265,7 @@ while (( ${iter} < ${#archs[@]} )); do
    eval ${install} "${strawberry_arch_path}/portableshell.bat" "${tmpdir}/Strawberry/${strawberry_version}/${arch}"
    eval ${install} "${strawberry_arch_path}/c/bin/dmake.exe" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/libbz2-1*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
+   eval ${install} "${strawberry_arch_path}/c/bin/libexpat*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/liblzma-5*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/libssl*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
    eval ${install} "${strawberry_arch_path}/c/bin/libcrypto*.dll" "${tmpdir}/Strawberry/${strawberry_version}/${arch}/c/bin"
