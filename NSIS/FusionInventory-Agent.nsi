@@ -591,23 +591,28 @@ Section "-Init" SecInit
       ${CopyINIOptionSection} "${IOS_GUI}" "${IOS_FINAL}"
    ${EndIf}
 
-   ; Uninstall current agent
-   ${UninstallCurrentAgent} $R0
-   DetailPrint "Agent Uninstalled with Code: '$R0'"
+   ${ReadINIOption} $R1 "${IOS_FINAL}" "${IO_EXECMODE}"
+   ${IfNot} "$R1" == "${EXECMODE_PORTABLE}"
+      ; Uninstall current agent
+      ${UninstallCurrentAgent} $R0
+      DetailPrint "Agent Uninstalled with Code: '$R0'"
 
-   ; Remove firewall exceptions (be sure)
-   ${RemoveFusionInventoryFirewallExceptions}
+      ; Remove firewall exceptions (be sure)
+      ${RemoveFusionInventoryFirewallExceptions}
 
-   ; Remove Windows service (be sure)
-   ${RemoveFusionInventoryWindowsService}
+      ; Remove Windows service (be sure)
+      ${RemoveFusionInventoryWindowsService}
 
-   ; Remove Windows task (be sure)
-   ${RemoveFusionInventoryWindowsTask}
+      ; Remove Windows task (be sure)
+      ${RemoveFusionInventoryWindowsTask}
+   ${EndIf}
 
    ; Create directories
    ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_INSTALLDIR}"
    CreateDirectory "$R0"
-   WriteUninstaller "$R0\${PRODUCT_UNINSTALLER}"
+   ${IfNot} "$R1" == "${EXECMODE_PORTABLE}"
+      WriteUninstaller "$R0\${PRODUCT_UNINSTALLER}"
+   ${EndIf}
 
    ; Fix the ${IO_LOGFILE} option if InstallDir is not the default
    ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_LOGFILE}"
@@ -727,33 +732,35 @@ Section "-End" SecEnd
    StrCpy $0 "End"
    DetailPrint "$(Msg_InstallingSection)"
 
-   ; AddUninstallInformation
-   ${AddUninstallInformation}
-
-   ; WriteConfigurationOptions
-   ${WriteConfigurationOptions}
-
-   ; Install Windows service
    ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_EXECMODE}"
-   ${If} "$R0" == "${EXECMODE_SERVICE}"
-      ${InstallFusionInventoryWindowsService}
-   ${EndIf}
+   ${IfNot} "$R0" == "${EXECMODE_PORTABLE}"
+      ; AddUninstallInformation
+      ${AddUninstallInformation}
 
-   ; Install Windows task
-   ${If} "$R0" == "${EXECMODE_TASK}"
-      ${AddFusionInventoryWindowsTask}
-   ${EndIf}
+      ; WriteConfigurationOptions
+      ${WriteConfigurationOptions}
 
-   ; Install Start Menu folder
-   ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_NO-START-MENU}"
-   ${If} $R0 = 0
-      ${InstallStartMenuFolder}
-   ${EndIf}
+      ; Install Windows service
+      ${If} "$R0" == "${EXECMODE_SERVICE}"
+         ${InstallFusionInventoryWindowsService}
+      ${EndIf}
 
-   ; Add Firewall exceptions
-   ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_ADD-FIREWALL-EXCEPTION}"
-   ${If} $R0 = 1
-      ${AddFusionInventoryFirewallException}
+      ; Install Windows task
+      ${If} "$R0" == "${EXECMODE_TASK}"
+         ${AddFusionInventoryWindowsTask}
+      ${EndIf}
+
+      ; Install Start Menu folder
+      ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_NO-START-MENU}"
+      ${If} $R0 = 0
+         ${InstallStartMenuFolder}
+      ${EndIf}
+
+      ; Add Firewall exceptions
+      ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_ADD-FIREWALL-EXCEPTION}"
+      ${If} $R0 = 1
+         ${AddFusionInventoryFirewallException}
+      ${EndIf}
    ${EndIf}
 SectionEnd
 
@@ -943,11 +950,14 @@ Function .onInstSuccess
       CopyFiles "$PLUGINSDIR\CommandLineParser.log" "$R0\debug\"
    !endif
 
-   ; Check runnow option
-   ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_RUNNOW}"
-   ${If} $R0 = 1
-      ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_INSTALLDIR}"
-      ExecShell "" '"$R0\fusioninventory-agent.bat"' '--wait=5 --delaytime=10' SW_HIDE
+   ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_EXECMODE}"
+   ${IfNot} "$R0" == "${EXECMODE_PORTABLE}"
+      ; Check runnow option
+      ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_RUNNOW}"
+      ${If} $R0 = 1
+         ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_INSTALLDIR}"
+         ExecShell "" '"$R0\fusioninventory-agent.bat"' '--wait=5 --delaytime=10' SW_HIDE
+      ${EndIf}
    ${EndIf}
 
    ; Prepare to exit
@@ -1075,7 +1085,9 @@ Function .onInitSilentMode
    ${EndIf}
 
    ; Is FusionInventory Agent installed?
-   ${If} ${FusionInventoryAgentIsInstalled}
+   ${ReadINIOption} $R0 "${IOS_COMMANDLINE}" "${IO_EXECMODE}"
+   ${IfNot} $R0 == "${EXECMODE_PORTABLE}"
+   ${AndIf} ${FusionInventoryAgentIsInstalled}
       ; The agent is already installed
 
       ; What type of installation is requested?

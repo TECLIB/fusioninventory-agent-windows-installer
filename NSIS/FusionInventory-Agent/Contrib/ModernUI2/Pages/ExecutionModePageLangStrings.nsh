@@ -80,5 +80,9 @@ LangString ExecutionModePage_RadioButton3_Text ${LANG_ENGLISH} "Manually"
 LangString ExecutionModePage_RadioButton3_Text ${LANG_FRENCH} "Manuellement"
 LangString ExecutionModePage_RadioButton3_Text ${LANG_SPANISH} "Manualmente"
 
+; ExecutionModePage_RadioButton4_Text
+LangString ExecutionModePage_RadioButton4_Text ${LANG_ENGLISH} "Portable"
+LangString ExecutionModePage_RadioButton4_Text ${LANG_FRENCH} "Portable"
+LangString ExecutionModePage_RadioButton4_Text ${LANG_SPANISH} "Portátil"
 
 !endif

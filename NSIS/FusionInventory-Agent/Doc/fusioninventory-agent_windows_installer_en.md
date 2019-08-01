@@ -147,6 +147,9 @@ behaviour](#specific-options-of-the-agent).
     > `Manual` [^Manual]
     > :   The agent doesn't run automatically
     >
+    > `Portable` [^Portable]
+    > :   As *manual*, the agent doesn't run automatically
+    >
     > `Current` [^Current]
     > :   The agent runs in the same way that the agent already installed runs
 
@@ -160,6 +163,11 @@ behaviour](#specific-options-of-the-agent).
     [^Manual]: In *manual* mode the agent is not managed by the system, it is
         the user who decides when and how it will be run. The *manual* mode is
         also know as *non-managed* mode or *autonomous* mode.
+
+    [^Portable]: In *portable* mode, as in *manual* mode, the agent is not managed
+        by the system, it is the user who decides when and how it will be run.
+        In this mode, the software is even not registered as installed software
+        and the only way to uninstall is to delete the installation folder.
 
     [^Current]: `Current` mode changes its behaviour in the case of an
         installation *from-scratch* (see [`/installtype`](#installtype)).  In

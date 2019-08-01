@@ -118,15 +118,18 @@
 !define InstallFusionInventoryAgent "!insertmacro InstallFusionInventoryAgent"
 
 !macro InstallFusionInventoryAgent
-   ; Push $R0 onto the stack
+   ; Push $R0, $R1, $R2 & $R3 onto the stack
    Push $R0
    Push $R1
+   Push $R2
+   Push $R3
 
    ; Set mode at which commands print their status
    SetDetailsPrint textonly
 
    ; Create directories
    ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_INSTALLDIR}"
+   ${ReadINIOption} $R2 "${IOS_FINAL}" "${IO_EXECMODE}"
    CreateDirectory "$R0"
    CreateDirectory "$R0\certs"
    CreateDirectory "$R0\docs"
@@ -155,7 +158,11 @@
    ${FileWriteLine} $R1 "@echo off"
    ${FileWriteLine} $R1 "for %%p in ($\".$\") do pushd $\"%%~fsp$\""
    ${FileWriteLine} $R1 "cd /d $\"%~dp0\perl\bin$\""
-   ${FileWriteLine} $R1 "perl.exe fusioninventory-agent %*"
+   ${If} "$R2" == "${EXECMODE_PORTABLE}"
+      ${FileWriteLine} $R1 "perl.exe fusioninventory-agent %*"
+   ${Else}
+      ${FileWriteLine} $R1 "perl.exe fusioninventory-agent --conf-file=$\"..\..\etc\agent.cfg$\" %*"
+   ${EndIf}
    ${FileWriteLine} $R1 "popd"
    FileClose $R1
 
@@ -188,6 +195,46 @@
    File /oname=agent.cfg.sample "${FIA_DIR}\etc\agent.cfg"
    File "${FIA_DIR}\etc\*-plugin.cfg"
 
+   ${If} "$R2" == "${EXECMODE_PORTABLE}"
+      ; Update agent config with an include directive
+      FileOpen $R1 "$R0\etc\agent.cfg" a
+      ${FileWriteLine} $R1 "include $\"conf.d/$\""
+      FileClose $R1
+      CreateDirectory "$R0\etc\conf.d"
+      ; Write options in a dedicated config file
+      FileOpen $R1 "$R0\etc\conf.d\portable.cfg" w
+      ${UpdateLocalConfig} $R1 "${IO_BACKEND-COLLECT-TIMEOUT}"
+      ${UpdateLocalConfig} $R1 "${IO_CA-CERT-DIR}"
+      ${UpdateLocalConfig} $R1 "${IO_CA-CERT-FILE}"
+      ${UpdateLocalConfig} $R1 "${IO_CA-CERT-URI}"
+      ${UpdateLocalConfig} $R1 "${IO_CONF-RELOAD-INTERVAL}"
+      ${UpdateLocalConfig} $R1 "${IO_DEBUG}"
+      ${UpdateLocalConfig} $R1 "${IO_DELAYTIME}"
+      ${UpdateLocalConfig} $R1 "${IO_HTML}"
+      ${UpdateLocalConfig} $R1 "${IO_HTTPD-IP}"
+      ${UpdateLocalConfig} $R1 "${IO_HTTPD-PORT}"
+      ${UpdateLocalConfig} $R1 "${IO_HTTPD-TRUST}"
+      ${UpdateLocalConfig} $R1 "${IO_LOCAL}"
+      ${UpdateLocalConfig} $R1 "${IO_LOGFILE}"
+      ${UpdateLocalConfig} $R1 "${IO_LOGFILE-MAXSIZE}"
+      ${UpdateLocalConfig} $R1 "${IO_LOGGER}"
+      ${UpdateLocalConfig} $R1 "${IO_NO-CATEGORY}"
+      ${UpdateLocalConfig} $R1 "${IO_NO-HTTPD}"
+      ${UpdateLocalConfig} $R1 "${IO_NO-P2P}"
+      ${UpdateLocalConfig} $R1 "${IO_NO-SSL-CHECK}"
+      ${UpdateLocalConfig} $R1 "${IO_NO-TASK}"
+      ${UpdateLocalConfig} $R1 "${IO_PASSWORD}"
+      ${UpdateLocalConfig} $R1 "${IO_PROXY}"
+      ${UpdateLocalConfig} $R1 "${IO_SCAN-HOMEDIRS}"
+      ${UpdateLocalConfig} $R1 "${IO_SCAN-PROFILES}"
+      ${UpdateLocalConfig} $R1 "${IO_SERVER}"
+      ${UpdateLocalConfig} $R1 "${IO_TAG}"
+      ${UpdateLocalConfig} $R1 "${IO_TASKS}"
+      ${UpdateLocalConfig} $R1 "${IO_TIMEOUT}"
+      ${UpdateLocalConfig} $R1 "${IO_USER}"
+      FileClose $R1
+   ${EndIf}
+
    ; Install $R0\perl\agent\FusionInventory\Agent.pm
    SetOutPath "$R0\perl\agent\FusionInventory"
    File "${FIA_DIR}\lib\FusionInventory\Agent.pm"
@@ -199,8 +246,12 @@
         "${FIA_DIR}\lib\FusionInventory\Agent\*.pm"
 
    ; Fix SYSCONFDIR setup as normally done in Makefile under Unix system
-   ${WordReplace} "$R0" "\" "\\" "+" $R1
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> q/$R1\\etc/,|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
+   ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
+      ${WordReplace} "$R0" "\" "\\" "+" $R1
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> q/$R1\\etc/,|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
+   ${Else}
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> '../../etc',|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
+   ${EndIf}
    Delete "$R0\perl\agent\FusionInventory\Agent\sed*"
 
    ; Install $R0\perl\agent\FusionInventory\Agent\HTTP\*.*
@@ -265,10 +316,47 @@
    ; Set mode at which commands print their status
    SetDetailsPrint lastused
 
-   ; Pop $R0 off of the stack
+   ; Pop $R3, $R2, $R1 & $R0 off of the stack
+   Pop $R3
+   Pop $R2
    Pop $R1
    Pop $R0
 !macroend
+
+
+; UpdateLocalConfig
+!define UpdateLocalConfig "!insertmacro UpdateLocalConfig"
+
+!macro UpdateLocalConfig ConfigHandle INIOption
+   Push "${ConfigHandle}"
+   Push "${INIOption}"
+   Call UpdateLocalConfig
+!macroend
+
+Function UpdateLocalConfig
+   ; Get parameters
+   Exch $R1
+   Exch
+   Exch $R0
+   Exch
+
+   ; Push $R2 & $R3 onto the stack
+   Push $R2
+   Push $R3
+
+   ; Only save the option if it differs from the known default
+   ${ReadINIOption} $R2 "${IOS_DEFAULT}" "$R1"
+   ${ReadINIOption} $R3 "${IOS_FINAL}" "$R1"
+   ${IfNot} "$R2" == "$R3"
+      ${FileWriteLine} $R0 "$R1=$R3"
+   ${EndIf}
+
+   ; Pop $R3, $R2, $R1 & $R0 off of the stack
+   Pop $R3
+   Pop $R2
+   Pop $R1
+   Pop $R0
+FunctionEnd
 
 
 ; InstallFusionInventoryAgentTaskCollect
@@ -763,6 +851,8 @@
 !macro InstallStrawberryPerl
    ; Push $R0 onto the stack
    Push $R0
+   Push $R1
+   Push $R2
 
    ; Set mode at which commands print their status
    SetDetailsPrint textonly
@@ -782,9 +872,13 @@
    File "${STRAWBERRY_DIR}\perl\bin\*.dll"
    File "${STRAWBERRY_DIR}\perl\bin\*.exe"
 
-   ; Rename perl.exe as fusioninventory-agent.exe and re-install it
-   Rename "perl.exe" "fusioninventory-agent.exe"
-   File "${STRAWBERRY_DIR}\perl\bin\perl.exe"
+   ${ReadINIOption} $R2 "${IOS_FINAL}" "${IO_EXECMODE}"
+
+   ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
+      ; Rename perl.exe as fusioninventory-agent.exe and re-install it
+      Rename "perl.exe" "fusioninventory-agent.exe"
+      File "${STRAWBERRY_DIR}\perl\bin\perl.exe"
+   ${EndIf}
 
    ; Install $R0\perl\lib
    SetOutPath "$R0\perl\lib\"
@@ -805,11 +899,21 @@
    ${FileWriteLine} $R1 "use warnings;"
    ${FileWriteLine} $R1 "use base qw(Exporter);"
    ${FileWriteLine} $R1 "our @EXPORT = ('%setup');"
-   ${FileWriteLine} $R1 "use lib '$R0/perl/agent';"
+   ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
+      ${FileWriteLine} $R1 "use lib '$R0/perl/agent';"
+   ${Else}
+      ${FileWriteLine} $R1 "use lib '../agent';"
+   ${EndIf}
    ${FileWriteLine} $R1 "our %setup = ("
-   ${FileWriteLine} $R1 "    datadir => '$R0/share',"
-   ${FileWriteLine} $R1 "    vardir  => '$R0/var',"
-   ${FileWriteLine} $R1 "    libdir  => '$R0/perl/agent',"
+   ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
+      ${FileWriteLine} $R1 "    datadir => '$R0/share',"
+      ${FileWriteLine} $R1 "    vardir  => '$R0/var',"
+      ${FileWriteLine} $R1 "    libdir  => '$R0/perl/agent',"
+   ${Else}
+      ${FileWriteLine} $R1 "    datadir => '../../share',"
+      ${FileWriteLine} $R1 "    vardir  => '../../var',"
+      ${FileWriteLine} $R1 "    libdir  => '../agent',"
+   ${EndIf}
    ${FileWriteLine} $R1 ");"
    ${FileWriteLine} $R1 "1;"
    FileClose $R1
@@ -817,7 +921,9 @@
    ; Set mode at which commands print their status
    SetDetailsPrint lastused
 
-   ; Pop $R0 off of the stack
+   ; Pop $R2, $R1 & $R0 off of the stack
+   Pop $R2
+   Pop $R1
    Pop $R0
 !macroend
 

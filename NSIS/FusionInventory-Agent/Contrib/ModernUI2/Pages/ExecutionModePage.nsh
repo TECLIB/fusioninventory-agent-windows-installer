@@ -99,6 +99,10 @@ Function ExecutionModePage_Create
    ${NSD_CreateRadioButton} 60u 75u 130u 11u "$(ExecutionModePage_RadioButton3_Text)"
    Pop $hCtl_ExecutionModePage_RadioButton3
 
+   ; === RadioButton4 (type: RadioButton) ===
+   ${NSD_CreateRadioButton} 60u 91u 130u 11u "$(ExecutionModePage_RadioButton4_Text)"
+   Pop $hCtl_ExecutionModePage_RadioButton4
+
    ; OnBack Function
    ${NSD_OnBack} ExecutionModePage_Back
 
@@ -127,6 +131,9 @@ Function ExecutionModePage_Create
    ${ElseIf} "$R0" == "${EXECMODE_MANUAL}"
       ; Set RadioButton3 Check
       ${NSD_Check} $hCtl_ExecutionModePage_RadioButton3
+   ${ElseIf} "$R0" == "${EXECMODE_PORTABLE}"
+      ; Set RadioButton4 Check
+      ${NSD_Check} $hCtl_ExecutionModePage_RadioButton4
    ${Else}
       ; It should not be possible
       Nop
@@ -139,11 +146,12 @@ FunctionEnd
 
 
 Function ExecutionModePage_Leave
-   ; Push $R0, $R1, $R2 & R3 onto the stack
+   ; Push $R0, $R1, $R2, $R3 & $R4 onto the stack
    Push $R0
    Push $R1
    Push $R2
    Push $R3
+   Push $R4
 
    ; Set default section
    StrCpy $R0 "${IOS_GUI}"
@@ -152,6 +160,7 @@ Function ExecutionModePage_Leave
    ${NSD_GetState} $hCtl_ExecutionModePage_RadioButton1 $R1
    ${NSD_GetState} $hCtl_ExecutionModePage_RadioButton2 $R2
    ${NSD_GetState} $hCtl_ExecutionModePage_RadioButton3 $R3
+   ${NSD_GetState} $hCtl_ExecutionModePage_RadioButton4 $R4
 
    ; Save the selected RadioButton
    ${If} $R1 = ${BST_CHECKED}
@@ -160,12 +169,15 @@ Function ExecutionModePage_Leave
       ${WriteINIOption} "$R0" "${IO_EXECMODE}" "${EXECMODE_TASK}"
    ${ElseIf} $R3 = ${BST_CHECKED}
       ${WriteINIOption} "$R0" "${IO_EXECMODE}" "${EXECMODE_MANUAL}"
+   ${ElseIf} $R4 = ${BST_CHECKED}
+      ${WriteINIOption} "$R0" "${IO_EXECMODE}" "${EXECMODE_PORTABLE}"
    ${Else}
       ; It should not be possible
       Nop
    ${EndIf}
 
-   ; Pop $R3, $R2, $R1 & $R0 off of the stack
+   ; Pop $R4, $R3, $R2, $R1 & $R0 off of the stack
+   Pop $R4
    Pop $R3
    Pop $R2
    Pop $R1

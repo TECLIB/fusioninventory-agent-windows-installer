@@ -164,6 +164,7 @@
 !define EXECMODE_TASK "Task"
 !define EXECMODE_MANUAL "Manual"
 !define EXECMODE_CURRENT "Current"
+!define EXECMODE_PORTABLE "Portable"
 
 !define FREQUENCY_MINUTE "Minute"
 !define FREQUENCY_HOURLY "Hourly"
@@ -253,6 +254,7 @@
    ${AddStrCommaUStr} ${ResultVar} "${EXECMODE_TASK}" ${ResultVar}
    ${AddStrCommaUStr} ${ResultVar} "${EXECMODE_MANUAL}" ${ResultVar}
    ${AddStrCommaUStr} ${ResultVar} "${EXECMODE_CURRENT}" ${ResultVar}
+   ${AddStrCommaUStr} ${ResultVar} "${EXECMODE_PORTABLE}" ${ResultVar}
 !macroend
 
 
