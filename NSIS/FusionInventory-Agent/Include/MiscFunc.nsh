@@ -158,7 +158,7 @@
    ${FileWriteLine} $R1 "@echo off"
    ${FileWriteLine} $R1 "for %%p in ($\".$\") do pushd $\"%%~fsp$\""
    ${FileWriteLine} $R1 "cd /d $\"%~dp0\perl\bin$\""
-   ${If} "$R2" == "${EXECMODE_PORTABLE}"
+   ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
       ${FileWriteLine} $R1 "perl.exe fusioninventory-agent %*"
    ${Else}
       ${FileWriteLine} $R1 "perl.exe fusioninventory-agent --conf-file=$\"..\..\etc\agent.cfg$\" %*"
@@ -192,14 +192,27 @@
 
    ; Install $R0\etc with all default HTTP server plugin configurations
    SetOutPath "$R0\etc\"
-   File /oname=agent.cfg.sample "${FIA_DIR}\etc\agent.cfg"
+   ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
+      File /oname=agent.cfg.sample "${FIA_DIR}\etc\agent.cfg"
+   ${Else}
+      File "${FIA_DIR}\etc\agent.cfg"
+      ; Update agent config with an include directive
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^#include .conf\.d.*$$/include $\'conf.d$\'/" "$R0\etc\agent.cfg"'
+      ; Fix defaults in agent .cfg
+      ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_HTTPD-IP}"
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^${IO_HTTPD-IP} =.*$$/${IO_HTTPD-IP} = $R3/" "$R0\etc\agent.cfg"'
+      ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_HTTPD-TRUST}"
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|^${IO_HTTPD-TRUST} =.*$$|${IO_HTTPD-TRUST} = $R3|" "$R0\etc\agent.cfg"'
+      ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_LOGGER}"
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^${IO_LOGGER} =.*$$/${IO_LOGGER} = $R3/" "$R0\etc\agent.cfg"'
+      ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_LOGFILE}"
+      ${WordReplace} "$R3" "\" "\\" "+" $R3
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^#${IO_LOGFILE} =.*$$/${IO_LOGFILE} = $\'$R3$\'/" "$R0\etc\agent.cfg"'
+      Delete "$R0\etc\sed*"
+   ${EndIf}
    File "${FIA_DIR}\etc\*-plugin.cfg"
 
    ${If} "$R2" == "${EXECMODE_PORTABLE}"
-      ; Update agent config with an include directive
-      FileOpen $R1 "$R0\etc\agent.cfg" a
-      ${FileWriteLine} $R1 "include $\"conf.d/$\""
-      FileClose $R1
       CreateDirectory "$R0\etc\conf.d"
       ; Write options in a dedicated config file
       FileOpen $R1 "$R0\etc\conf.d\portable.cfg" w
@@ -250,7 +263,7 @@
       ${WordReplace} "$R0" "\" "\\" "+" $R1
       nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> q/$R1\\etc/,|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
    ${Else}
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> '../../etc',|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> $\'../../etc$\',|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
    ${EndIf}
    Delete "$R0\perl\agent\FusionInventory\Agent\sed*"
 
@@ -348,7 +361,14 @@ Function UpdateLocalConfig
    ${ReadINIOption} $R2 "${IOS_DEFAULT}" "$R1"
    ${ReadINIOption} $R3 "${IOS_FINAL}" "$R1"
    ${IfNot} "$R2" == "$R3"
-      ${FileWriteLine} $R0 "$R1=$R3"
+      ${If} "$R1" == "${IO_LOGFILE}"
+      ${OrIf} "$R1" == "${IO_CA-CERT-FILE}"
+      ${OrIf} "$R1" == "${IO_CA-CERT-DIR}"
+      ${OrIf} "$R1" == "${IO_LOCAL}"
+         ${FileWriteLine} $R0 "$R1 = $\"$R3$\""
+      ${Else}
+         ${FileWriteLine} $R0 "$R1 = $R3"
+      ${EndIf}
    ${EndIf}
 
    ; Pop $R3, $R2, $R1 & $R0 off of the stack

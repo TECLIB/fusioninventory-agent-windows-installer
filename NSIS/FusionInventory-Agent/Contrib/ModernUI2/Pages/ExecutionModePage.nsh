@@ -63,6 +63,7 @@ Var hCtl_ExecutionModePage_GroupBox1
 Var hCtl_ExecutionModePage_RadioButton1
 Var hCtl_ExecutionModePage_RadioButton2
 Var hCtl_ExecutionModePage_RadioButton3
+Var hCtl_ExecutionModePage_RadioButton4
 
 
 ;--------------------------------
@@ -83,7 +84,7 @@ Function ExecutionModePage_Create
    !insertmacro MUI_HEADER_TEXT "$(ExecutionModePage_Text)" "$(ExecutionModePage_SubText)"
 
    ; === GroupBox1 (type: GroupBox) ===
-   ${NSD_CreateGroupBox} 50u 30u 196u 65u "$(ExecutionModePage_GroupBox1_Text)"
+   ${NSD_CreateGroupBox} 50u 30u 196u 81u "$(ExecutionModePage_GroupBox1_Text)"
    Pop $hCtl_ExecutionModePage_GroupBox1
 
    ; === RadioButton1 (type: RadioButton) ===
