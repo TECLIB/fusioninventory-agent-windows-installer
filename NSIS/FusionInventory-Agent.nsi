@@ -519,9 +519,6 @@ ReserveFile ".\Plugins\SimpleFC.dll"
 ReserveFile ".\Plugins\SimpleSC.dll"
 ReserveFile "${FIAI_DIR}\INI\Options.ini"
 ReserveFile "${FIAI_DIR}\LicenseEnglish.rtf"
-ReserveFile "${SED_DIR}\libiconv2.dll"
-ReserveFile "${SED_DIR}\libintl3.dll"
-ReserveFile "${SED_DIR}\regex2.dll"
 ReserveFile "${SED_DIR}\sed.exe"
 
 
@@ -874,14 +871,8 @@ Function .onInit
    SetOutPath "$PLUGINSDIR"
    File "${FIAI_DIR}\INI\Options.ini"
 
-   ; Extract files ${SED_DIR}\libiconv2.dll
-   ;               ${SED_DIR}\libintl3.dll
-   ;               ${SED_DIR}\regex2.dll
-   ;               ${SED_DIR}\sed.exe
+   ; Extract files ${SED_DIR}\sed.exe
    SetOutPath "$PLUGINSDIR"
-   File "${SED_DIR}\libiconv2.dll"
-   File "${SED_DIR}\libintl3.dll"
-   File "${SED_DIR}\regex2.dll"
    File "${SED_DIR}\sed.exe"
 
    ; Set current install type
