@@ -179,15 +179,15 @@
    File /oname=installer-contributions.txt "..\Contributions.txt"
    File /oname=installer-license.txt "..\License.txt"
    File /oname=installer-readme.txt "..\Readme.txt"
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\agent-changes.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\agent-license.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\agent-readme.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\agent-thanks.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-acknowledgments.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-changes.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-contributions.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-license.txt"'
-   nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-readme.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\agent-changes.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\agent-license.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\agent-readme.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\agent-thanks.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\installer-acknowledgments.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\installer-changes.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\installer-contributions.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\installer-license.txt"'
+   nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/$$/\r/" "$R0\docs\releases\installer-readme.txt"'
 
    ; Install $R0\etc with all default HTTP server plugin configurations
    SetOutPath "$R0\etc\"
@@ -197,14 +197,14 @@
       File "${FIA_DIR}\etc\agent.cfg"
       ; Fix defaults in agent .cfg
       ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_HTTPD-IP}"
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^${IO_HTTPD-IP} =.*$$/${IO_HTTPD-IP} = $R3/" "$R0\etc\agent.cfg"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/^${IO_HTTPD-IP} =.*$$/${IO_HTTPD-IP} = $R3/" "$R0\etc\agent.cfg"'
       ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_HTTPD-TRUST}"
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|^${IO_HTTPD-TRUST} =.*$$|${IO_HTTPD-TRUST} = $R3|" "$R0\etc\agent.cfg"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s|^${IO_HTTPD-TRUST} =.*$$|${IO_HTTPD-TRUST} = $R3|" "$R0\etc\agent.cfg"'
       ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_LOGGER}"
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^${IO_LOGGER} =.*$$/${IO_LOGGER} = $R3/" "$R0\etc\agent.cfg"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/^${IO_LOGGER} =.*$$/${IO_LOGGER} = $R3/" "$R0\etc\agent.cfg"'
       ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_LOGFILE}"
       ${WordReplace} "$R3" "\" "\\" "+" $R3
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|^#${IO_LOGFILE} =.*$$|${IO_LOGFILE} = $\'$R3$\'|" "$R0\etc\agent.cfg"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s|^#${IO_LOGFILE} =.*$$|${IO_LOGFILE} = $\'$R3$\'|" "$R0\etc\agent.cfg"'
       ; Update agent config with an include directive
       FileOpen $R1 "$R0\etc\agent.cfg" a
       FileSeek $R1 0 END
@@ -263,9 +263,9 @@
    ; Fix SYSCONFDIR setup as normally done in Makefile under Unix system
    ${IfNot} "$R2" == "${EXECMODE_PORTABLE}"
       ${WordReplace} "$R0" "\" "\\" "+" $R1
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> q/$R1\\etc/,|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s|=> undef, # SYSCONFDIR.*|=> q/$R1\\etc/,|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
    ${Else}
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> $\'../../etc$\',|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s|=> undef, # SYSCONFDIR.*|=> $\'../../etc$\',|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
    ${EndIf}
 
    ; Install $R0\perl\agent\FusionInventory\Agent\HTTP\*.*
