@@ -173,6 +173,15 @@ Function MiscelaneousOptionsPage_Create
    ${ReadINIOption} $R1 "$R0" "${IO_TAG}"
    ${NSD_SetText} $hCtl_MiscelaneousOptionsPage_TextBox1 "$R1"
 
+   ; Disable not handled options in portable execmode
+   ${ReadINIOption} $R1 "$R0" "${IO_EXECMODE}"
+   ${If} "$R1" == "${EXECMODE_PORTABLE}"
+      ${NSD_Uncheck} $hCtl_MiscelaneousOptionsPage_CheckBox1
+      ${NSD_AddStyle} $hCtl_MiscelaneousOptionsPage_CheckBox1 0x08000000
+      ${NSD_Uncheck} $hCtl_MiscelaneousOptionsPage_CheckBox2
+      ${NSD_AddStyle} $hCtl_MiscelaneousOptionsPage_CheckBox2 0x08000000
+   ${EndIf}
+
    ; Pop $R1 & $R0 off of the stack
    Pop $R1
    Pop $R0
