@@ -188,7 +188,6 @@
    nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-contributions.txt"'
    nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-license.txt"'
    nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/$$/\r/" "$R0\docs\releases\installer-readme.txt"'
-   Delete "$R0\docs\releases\sed*"
 
    ; Install $R0\etc with all default HTTP server plugin configurations
    SetOutPath "$R0\etc\"
@@ -268,7 +267,6 @@
    ${Else}
       nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|=> undef, # SYSCONFDIR.*|=> $\'../../etc$\',|" "$R0\perl\agent\FusionInventory\Agent\Config.pm"'
    ${EndIf}
-   Delete "$R0\perl\agent\FusionInventory\Agent\sed*"
 
    ; Install $R0\perl\agent\FusionInventory\Agent\HTTP\*.*
    SetOutPath "$R0\perl\agent\FusionInventory\Agent\HTTP"
