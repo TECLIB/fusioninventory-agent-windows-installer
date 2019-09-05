@@ -196,8 +196,6 @@
       File /oname=agent.cfg.sample "${FIA_DIR}\etc\agent.cfg"
    ${Else}
       File "${FIA_DIR}\etc\agent.cfg"
-      ; Update agent config with an include directive
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^#include .conf\.d.*$$/include $\'conf.d$\'/" "$R0\etc\agent.cfg"'
       ; Fix defaults in agent .cfg
       ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_HTTPD-IP}"
       nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^${IO_HTTPD-IP} =.*$$/${IO_HTTPD-IP} = $R3/" "$R0\etc\agent.cfg"'
@@ -207,8 +205,13 @@
       nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^${IO_LOGGER} =.*$$/${IO_LOGGER} = $R3/" "$R0\etc\agent.cfg"'
       ${ReadINIOption} $R3 "${IOS_DEFAULT}" "${IO_LOGFILE}"
       ${WordReplace} "$R3" "\" "\\" "+" $R3
-      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s/^#${IO_LOGFILE} =.*$$/${IO_LOGFILE} = $\'$R3$\'/" "$R0\etc\agent.cfg"'
-      Delete "$R0\etc\sed*"
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -i -e "s|^#${IO_LOGFILE} =.*$$|${IO_LOGFILE} = $\'$R3$\'|" "$R0\etc\agent.cfg"'
+      ; Update agent config with an include directive
+      FileOpen $R1 "$R0\etc\agent.cfg" a
+      FileSeek $R1 0 END
+      FileWrite $R1 'include "conf.d/"'
+      FileWriteByte $R1 "10"
+      FileClose $R1
    ${EndIf}
    File "${FIA_DIR}\etc\*-plugin.cfg"
 
