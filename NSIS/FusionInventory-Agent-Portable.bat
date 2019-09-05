@@ -53,9 +53,11 @@ set MSYSTEM=MSYS
 if not exist "%MINGW_PATH%" goto mingw_not_installed
 :: MinGW/MSYS is already installed
 
+del /Q *-portable.exe 2>nul
+
 FOR %%I IN (*.exe) DO (
     echo Running %%I
-    %%I /S /acceptlicense /installtype=from-scratch /execmode=manual /installtasks=Full /no-start-menu /installdir=%~dp0\Portable\FusionInventory-Agent
+    start /W %%I /S /acceptlicense /installtype=from-scratch /execmode=portable /installtasks=Full /logger=stderr /installdir=%~dp0\Portable\FusionInventory-Agent
     %MSYS_PATH%\bin\bash.exe "%~dpn0.sh" %%I
 )
 

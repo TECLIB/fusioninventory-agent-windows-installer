@@ -109,50 +109,11 @@ arch=${arch%_*}
 # Build installer related portable archive
 echo -n "Building ${arch} portable archive..."
 
-# Wait until agent is fully installed
-let timeout=5*60
-while [ ! -e "Portable/FusionInventory-Agent/share/usb.ids" -o ! -e "Portable/FusionInventory-Agent/Uninstall.exe" ]; do
-   sleep 1
-   let --timeout
-   (( timeout % 10 )) || echo -n
-   (( timeout % 60 )) || echo
-   if [ "$timeout" -eq "0" ]; then
-      echo "Failed on a timeout"
-      ls Portable/FusionInventory-Agent
-      exit 5
-   fi
-done
-# Wait a little more by security
-sleep 5
-
-# Cleanup
-rm -f "Portable/FusionInventory-Agent/Uninstall.exe"
-
 # Add data dir
-install --directory "Portable/FusionInventory-Agent/data"
+/bin/install --directory "Portable/FusionInventory-Agent/data"
 
-# Update conf dir
-install --directory "Portable/FusionInventory-Agent/etc/conf.d"
-mv -f "Portable/FusionInventory-Agent/etc/agent.cfg.sample" "Portable/FusionInventory-Agent/etc/agent.cfg"
-echo 'include "conf.d/"' >>"Portable/FusionInventory-Agent/etc/agent.cfg"
-
-# Fix agent launcher to use config file
-cat >"Portable/FusionInventory-Agent/fusioninventory-agent.bat" <<BATCH
-@echo off
-for %%p in (".") do pushd "%%~fsp"
-cd /d "%~dp0\perl\bin"
-perl.exe fusioninventory-agent --conf-file="..\..\etc\agent.cfg" %*
-popd
-BATCH
-
-# Reset _confdir in Config.pm
-sed -i -e "s|'_confdir' => .*$|'_confdir' => '../../etc',|" \
-   "Portable/FusionInventory-Agent/perl/agent/FusionInventory/Agent/Config.pm"
-
-# Fix to use relative path in setup.pm
-sed -i -e "s|use lib.*$|use lib '../agent';|" -e "s|datadir.*$|datadir => '../../share',|" \
-   -e "s|vardir.*$|vardir  => '../../var',|" -e "s|libdir.*$|libdir  => '../agent',|" \
-   "Portable/FusionInventory-Agent/perl/lib/setup.pm"
+# Unset and comment not used logfile path in portable.cfg
+/bin/sed -i -e "s|^logfile.*$|#logfile =|" "Portable/FusionInventory-Agent/etc/conf.d/portable.cfg"
 
 ( cd Portable ; 7z a -bd -sfx7z.sfx -stl -y "../${installer%.exe}-portable.exe" "FusionInventory-Agent" >../7z-${arch}-portable.txt 2>&1; )
 if (( $? == 0 )); then
@@ -170,6 +131,6 @@ else
    echo " Failed to build ${arch} portable agent archive."
 fi
 
-rm -rf "Portable" > /dev/null 2>&1
+/bin/rm -rf "Portable" > /dev/null 2>&1
 
 echo
