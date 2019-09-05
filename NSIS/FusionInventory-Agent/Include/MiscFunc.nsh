@@ -248,6 +248,7 @@
       ${UpdateLocalConfig} $R1 "${IO_TIMEOUT}"
       ${UpdateLocalConfig} $R1 "${IO_USER}"
       FileClose $R1
+      nsExec::Exec '"$PLUGINSDIR\sed.exe" -bi -e "s/\r$$//" "$R0\etc\conf.d\portable.cfg"'
    ${EndIf}
 
    ; Install $R0\perl\agent\FusionInventory\Agent.pm
