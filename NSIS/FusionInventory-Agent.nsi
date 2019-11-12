@@ -737,6 +737,13 @@ Section "-End" SecEnd
       ; WriteConfigurationOptions
       ${WriteConfigurationOptions}
 
+      ; Handle runnow option before starting the service or task
+      ${ReadINIOption} $R1 "${IOS_FINAL}" "${IO_RUNNOW}"
+      ${If} $R1 = 1
+         ${ReadINIOption} $R1 "${IOS_FINAL}" "${IO_INSTALLDIR}"
+         ExecShell "" '"$R1\fusioninventory-agent.bat"' '--set-forcerun' SW_HIDE
+      ${EndIf}
+
       ; Install Windows service
       ${If} "$R0" == "${EXECMODE_SERVICE}"
          ${InstallFusionInventoryWindowsService}
@@ -940,16 +947,6 @@ Function .onInstSuccess
       CopyFiles "${INI_OPTIONS_FILE}" "$R0\debug\"
       CopyFiles "$PLUGINSDIR\CommandLineParser.log" "$R0\debug\"
    !endif
-
-   ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_EXECMODE}"
-   ${IfNot} "$R0" == "${EXECMODE_PORTABLE}"
-      ; Check runnow option
-      ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_RUNNOW}"
-      ${If} $R0 = 1
-         ${ReadINIOption} $R0 "${IOS_FINAL}" "${IO_INSTALLDIR}"
-         ExecShell "" '"$R0\fusioninventory-agent.bat"' '--wait=5 --delaytime=10' SW_HIDE
-      ${EndIf}
-   ${EndIf}
 
    ; Prepare to exit
    ${PrepareToExit}
