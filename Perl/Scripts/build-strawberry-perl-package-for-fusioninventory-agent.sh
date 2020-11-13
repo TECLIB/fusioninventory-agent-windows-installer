@@ -225,8 +225,8 @@ while (( ${iter} < ${#archs[@]} )); do
    echo "Building the Perl ARchive (PAR) package for Strawberry Perl ${strawberry_release} (${strawberry_version}-${arch_label}s)..."
 
    (eval cd "${strawberry_arch_path}"
-    eval ${perl} ${pp} -v -p -B -c -u -M threads -o ${tmpdir}/${strawberry_pepfia_par_file} \
-       "${tmpdir}/${strawberry_pepfia_par_template_file}" > ../../pp.log 2>&1
+    eval ${perl} ${pp} --verbose=3 -p -B -c -M threads -o ${tmpdir}/${strawberry_pepfia_par_file} \
+       "${tmpdir}/${strawberry_pepfia_par_template_file}" > ../../pp-${arch_label}s.log 2>&1
    )
 
    # Partial clean
