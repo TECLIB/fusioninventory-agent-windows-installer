@@ -229,6 +229,13 @@ while (( ${iter} < ${#archs[@]} )); do
        "${tmpdir}/${strawberry_pepfia_par_template_file}" > ../../pp-${arch_label}s.log 2>&1
    )
 
+   # Check whether there is an error
+   if (( $? != 0 )); then
+      echo
+      echo "There has been an error while building the Perl ARchive (PAR) package for Strawberry Perl ${strawberry_release} (${strawberry_version}-${arch_label}s)."
+      exit 5
+   fi
+
    # Partial clean
    #    It seems "${tmpdir}/inc" is created when pp takes into account
    #    the Perl module inc::Module::Install
